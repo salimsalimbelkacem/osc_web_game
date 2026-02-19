@@ -1,7 +1,7 @@
 export EM_CACHE:=/home/salim_belkacem/.emscripten_cache
 
 CC = emcc
-IN = main.c
+IN = src/*.c
 BIN = bin
 
 ldir = /home/salim_belkacem/libs/raylib-5.5_webassembly

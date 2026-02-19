@@ -1,0 +1,20 @@
+{
+  "name": "tailwind",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.2.0"
+  },
+
+  "scripts": {
+    "watch-css": "tailwindcss -i ./base.css -o ../bin/static/style.css --watch=always --minify",
+    "gen-css": "tailwindcss -i ./base.css -o ../bin/static/style.css --minify"
+  }
+}
