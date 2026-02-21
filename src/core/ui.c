@@ -1,7 +1,25 @@
 // implement UI here
 
 #include "include/ui.h"
-#include <raylib.h>
+
+//default ui styles
+const u32 UI_DEF_FG_COLOR     = 0xc1c1c1;
+
+const u32 UI_DEF_BG_COLOR     = 0x1e1e1e;
+const u32 UI_DEF_BORDER_COLOR = 0xe1e1e1;
+
+// text and heading;
+const string UI_DEF_TXT_FONT     = STR("sans");
+const u16 UI_DEF_TXT_FONT_SIZE   = 12;
+
+const string UI_DEF_HEADING_FONT = STR("sans");
+const u16 UI_DEF_H1_FONT_SIZE    = 24;
+const u16 UI_DEF_H2_FONT_SIZE    = 20;
+const u16 UI_DEF_H3_FONT_SIZE    = 16;
+
+// buttons;
+const i16 UI_DEF_BUTTON_WIDTH    = 50;
+const i16 UI_DEF_BUTTON_HEIGHT   = 25;
 
 static inline UI_element* UI_Alloc(arena* a) {
   return (UI_element*) ARENA_Alloc( a, sizeof(UI_element));
@@ -29,7 +47,7 @@ UI_root UI_Init(arena* a){
 
 UI_element* UI_InitElement( arena* a){
   UI_element* e = UI_Alloc(a);
-  e->id = STR(NULL);
+  e->id = ARENA_strcpy(a, STR(""));
 
   e->rect.x = 0;
   e->rect.y = 0;
@@ -74,6 +92,7 @@ void inline UI_AppendElement(UI_element *e, UI_element *new_e) {
 
   tail->next = new_e;
   new_e->prev = tail;
+  new_e->gap = tail->gap;
   new_e->next = NULL;
 }
 
@@ -98,9 +117,12 @@ void UI_AppendChild(UI_element* parent, UI_element* new_e){
 /* void UI_PopElement(UI_element* e, UI_element* new_e){} */
 
 
-UI_element* UI_TextButton(arena* a, string text, UI_Action onclick){
+UI_element* UI_TextButton(arena* a, string text){
   UI_element* butt = UI_InitElement(a);
   butt->type = UI_ELEMENT_BUTTON;
+
+  butt->rect.width = UI_DEF_BUTTON_WIDTH;
+  butt->rect.height = UI_DEF_BUTTON_HEIGHT;
 
   butt->content.type = UI_CONTENT_TEXT;  
   butt->content.text.content = ARENA_strcpy(a, text);
@@ -152,47 +174,46 @@ UI_element *UI_Heading(arena *a, string text, u8 level) {
 void __UI_UpdateLayout__(UI_element* r, bool stacking){
   // this is not ai generated it's just that the code is confusing
 
-  UI_element* ptr = r;
-
   // set pos
-  if (ptr->parent) { // checks if it's the first child
-    ptr->rect.x = ptr->parent->rect.x + ptr->parent->content.padding;
-    ptr->rect.y = ptr->parent->rect.y + ptr->parent->content.padding;
-  }
-  else if (ptr->prev){
-    if (stacking) { // atp it's a sibling so it has previous and has width
-      ptr->rect.y = ptr->prev->rect.y + ptr->prev->rect.height + ptr->gap;
-    } else {
-      ptr->rect.x = ptr->prev->rect.x + ptr->prev->rect.width + ptr->gap;
-    }
-  }
+  if (r->parent) { // checks if it's the first child
+    r->rect.x = r->parent->rect.x + r->parent->content.padding;
+    r->rect.y = r->parent->rect.y + r->parent->content.padding;
 
-  // setting the width assumes that the the children at the bottom have their dimensions declared
+  } else if (r->prev) {
+    if (stacking) { // atp it's a sibling so it has previous and has width
+      r->rect.x = r->prev->rect.x;
+      r->rect.y = r->prev->rect.y + r->prev->rect.height + r->gap;
+    } else {
+      r->rect.x = r->prev->rect.x + r->prev->rect.width + r->gap;
+      r->rect.y = r->prev->rect.y;
+      }
+  }
 
   // go down
-  if (ptr->content.children){
-    __UI_UpdateLayout__(ptr->content.children, ptr->content.stack_content);
-    // set dimensions after acumulating 
-    ptr->parent->rect.width = ptr->list_width;
-    ptr->parent->rect.height = ptr->list_height;
+  if (r->content.children){
+    __UI_UpdateLayout__(r->content.children, r->content.stack_content);
   }
 
   // go left
-  if (ptr->next){
-    __UI_UpdateLayout__(ptr->next, stacking);
+  else if (r->next){
+    __UI_UpdateLayout__(r->next, stacking);
 
-    // acumulate dimnsions
-    if (stacking) {
-      ptr->prev->list_width = MAX(ptr->list_width, ptr->prev->rect.width);
-      ptr->prev->list_height += ptr->list_height;
-    } else {
-      ptr->prev->list_height = MAX(ptr->list_height, ptr->prev->rect.height);
-      ptr->prev->list_width += ptr->list_width;
-    }
+  } else {
+    r->list_width = r->rect.width;
+    r->list_height = r->rect.height;
   }
-  else{
-    ptr->list_width = ptr->rect.width;
-    ptr->list_height = ptr->rect.height;
+
+  if (r->parent) {
+    r->parent->rect.width += r->list_width;
+    r->parent->rect.height += r->list_height;
+  } else if (r->prev) {
+    if (stacking) {
+      r->prev->list_width = MAX(r->list_width, r->prev->rect.width);
+      r->prev->list_height += r->list_height + r->gap;
+    } else {
+      r->prev->list_height = MAX(r->list_height, r->prev->rect.height);
+      r->prev->list_width += r->list_width + r->gap;
+    }
   }
 }
 
