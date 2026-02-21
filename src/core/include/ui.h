@@ -1,24 +1,6 @@
 #include <raylib.h>
 #include "arena.h"
 
-//default ui styles
-const u32 UI_DEF_FG_COLOR     = 0xc1c1c1;
-
-const u32 UI_DEF_BG_COLOR     = 0x1e1e1e;
-const u32 UI_DEF_BORDER_COLOR = 0xe1e1e1;
-
-// text and heading;
-const string UI_DEF_TXT_FONT     = STR("sans");
-const u16 UI_DEF_TXT_FONT_SIZE   = 12;
-
-const string UI_DEF_HEADING_FONT = STR("sans");
-const u16 UI_DEF_H1_FONT_SIZE    = 24;
-const u16 UI_DEF_H2_FONT_SIZE    = 20;
-const u16 UI_DEF_H3_FONT_SIZE    = 16;
-
-// buttons;
-const i16 UI_DEF_BUTTON_WIDTH    = 50;
-const i16 UI_DEF_BUTTON_HEIGHT   = 25;
 
 
 /* typedef enum { */
@@ -116,8 +98,8 @@ void UI_AppendChild(UI_element* parent, UI_element* new_e);
 void UI_PopChild(UI_element* parent); // should pop all sub-children obviously
 
 
-UI_element* UI_Text_Button(arena* a, string text);
-UI_element* UI_Icon_Button(arena* a, struct Image icon);
+UI_element* UI_TextButton(arena* a, string text);
+UI_element* UI_IconButton(arena* a, struct Image icon);
 
 UI_element* UI_Textbox(arena* a, string text);
 UI_element* UI_Heading(arena* a, string text, u8 level);

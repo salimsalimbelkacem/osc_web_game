@@ -10,9 +10,9 @@ typedef struct arena {
 
 arena ARENA_Init();
 
-uptr ARENA_Alloc(arena* a, uptr size);
+void* ARENA_Alloc(arena* a, uptr size);
 
-void inline ARENA_Free(arena* a, uptr offset);
-void inline ARENA_Reset(arena* a);
+void ARENA_Free(arena* a, uptr offset);
+void ARENA_Reset(arena* a);
 
 string ARENA_strcpy(arena* a, string src);

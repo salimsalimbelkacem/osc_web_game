@@ -7,12 +7,12 @@ arena ARENA_Init(){
   return a;
 }
 
-uptr ARENA_Allocate(arena* a, uptr size){
+void* ARENA_Alloc(arena* a, uptr size){
   if (a->offset + size > ARENA_SIZE) return NULL;
   
-  uptr pointer = a->offset;
+  void* pointer = a->mem + a->offset;
   a->offset += size;
-  return pointer;  
+  return pointer;
 }
 
 void inline ARENA_Free(arena* a, uptr offset){a->offset = offset;}
