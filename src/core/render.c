@@ -1,12 +1,4 @@
-#include <raygui.h>
-#include "include/ui.h"
-
-typedef enum {
-    DISPLAY_NONE = 0,
-    DISPLAY_LAYOUT_UPDATED = 1 << 0,
-/*     DISPLAY_STATE_ = 1 << 2 */
-} Display_Flags;
-
+#include "./include/render.h"
 
 #define ELEMENT_STR(e) (char*)e.content.text.content.str
 
