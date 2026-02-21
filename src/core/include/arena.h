@@ -14,3 +14,5 @@ uptr ARENA_Alloc(arena* a, uptr size);
 
 void inline ARENA_Free(arena* a, uptr offset);
 void inline ARENA_Reset(arena* a);
+
+string ARENA_strcpy(arena* a, string src);
