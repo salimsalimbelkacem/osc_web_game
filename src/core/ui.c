@@ -25,13 +25,9 @@ static inline UI_element* UI_Alloc(arena* a) {
   return (UI_element*) ARENA_Alloc( a, sizeof(UI_element));
 }
 
-static inline UI_element* UI_ListGetTail(UI_element* e) {
-  if(!e) return NULL;
-
-  UI_element* p = e;
-  for(; p->next != NULL; p=p->next){}
-
-  return p;
+static UI_element* UI_ListGetTail(UI_element* e) {
+  if(!e->next) return e;
+  return UI_ListGetTail(e->next);
 }
 
 UI_root UI_Init(arena* a){
@@ -39,6 +35,7 @@ UI_root UI_Init(arena* a){
 
   r->rect.width = SCREEN_WIDTH;
   r->rect.height = SCREEN_HEIGHT;
+  r->type = UI_ELEMENT_ROOT;
 
   r->id = STR("root");
 
@@ -110,6 +107,7 @@ void UI_AppendChild(UI_element* parent, UI_element* new_e){
   }
 
   UI_AppendElement( parent->content.children, new_e);
+  parent->content.type = UI_CONTENT_CHILDREN;
   new_e->next = NULL;
 }
 
@@ -171,6 +169,8 @@ UI_element *UI_Heading(arena *a, string text, u8 level) {
   return heading;  
 }
 
+u16 GetSumChildren();
+
 void __UI_UpdateLayout__(UI_element* r, bool stacking){
   // this is not ai generated it's just that the code is confusing
 
@@ -180,7 +180,7 @@ void __UI_UpdateLayout__(UI_element* r, bool stacking){
     r->rect.y = r->parent->rect.y + r->parent->content.padding;
 
   } else if (r->prev) {
-    if (stacking) { // atp it's a sibling so it has previous and has width
+    if (stacking) { // atp it's a sibling so it has previous
       r->rect.x = r->prev->rect.x;
       r->rect.y = r->prev->rect.y + r->prev->rect.height + r->gap;
     } else {
@@ -195,7 +195,7 @@ void __UI_UpdateLayout__(UI_element* r, bool stacking){
   }
 
   // go left
-  else if (r->next){
+  if (r->next){
     __UI_UpdateLayout__(r->next, stacking);
 
   } else {
@@ -203,18 +203,21 @@ void __UI_UpdateLayout__(UI_element* r, bool stacking){
     r->list_height = r->rect.height;
   }
 
-  if (r->parent) {
-    r->parent->rect.width += r->list_width;
-    r->parent->rect.height += r->list_height;
-  } else if (r->prev) {
+  if (r->prev) {
     if (stacking) {
       r->prev->list_width = MAX(r->list_width, r->prev->rect.width);
-      r->prev->list_height += r->list_height + r->gap;
+      r->prev->list_height += r->list_height + r->prev->rect.height + r->gap;
     } else {
       r->prev->list_height = MAX(r->list_height, r->prev->rect.height);
-      r->prev->list_width += r->list_width + r->gap;
+      r->prev->list_width  += r->list_width  + r->prev->rect.width +  r->gap;
     }
   }
+
+  if (r->parent && r->parent->type != UI_ELEMENT_ROOT) {
+    r->parent->rect.width += r->list_width + 2*r->parent->content.padding;
+    r->parent->rect.height += r->list_height + 2*r->parent->content.padding;
+  }
+
 }
 
 void UI_UpdateLayout(UI_element* r){

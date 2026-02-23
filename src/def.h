@@ -3,7 +3,7 @@
 #include <string.h>
 
 #define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 1280
+#define SCREEN_HEIGHT 720
 
 #define STR(x) (string){.str=(u8*)x, .size=strlen(x)+1}
 #define MAX(a, b) (a>b)?a:b

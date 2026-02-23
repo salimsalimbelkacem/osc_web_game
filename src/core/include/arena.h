@@ -1,6 +1,6 @@
 #include "../../def.h"
 
-#define ARENA_SIZE 1024
+#define ARENA_SIZE 50*1024
 
 typedef struct arena {
   u8 mem[ARENA_SIZE];
