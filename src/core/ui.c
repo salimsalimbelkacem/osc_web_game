@@ -42,6 +42,10 @@ UI_root UI_Init(arena* a){
   return (UI_root) {a, r};
 }
 
+void* UI_ClickNothing(void*){
+  return NULL;
+}
+
 UI_element* UI_InitElement( arena* a){
   UI_element* e = UI_Alloc(a);
   e->id = ARENA_strcpy(a, STR(""));
@@ -53,13 +57,15 @@ UI_element* UI_InitElement( arena* a){
   e->gap = 0;
   e->content.text.font_size = 12;
 
-  e->onClick_left = NULL;
-  e->onClick_right = NULL;
-  e->onClick_middle = NULL;
+  e->onClick_left   = UI_ClickNothing;
+  e->onClick_right  = UI_ClickNothing;
+  e->onClick_middle = UI_ClickNothing;
   e->onHover = NULL;
   e->next = NULL;
   e->prev = NULL;
   e->parent = NULL;
+  e->click_args = NULL;
+  e->click_out = NULL;
 
   e->type = UI_ELEMENT_NONE;
 

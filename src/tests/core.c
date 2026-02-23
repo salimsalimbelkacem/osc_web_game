@@ -1,16 +1,21 @@
 #include "../core/include/core.h"
 #include <stdio.h>
 
-void dosomething(){
+void* dosomething(void* elem){
+  UI_element* e = (UI_element*)elem;
+  e->rect.x += 50;
+  e->rect.y += 50;
   printf("pisso");
+
+  return NULL;  
 }
 
 void printUI(UI_element r, int level){
   printf("%d ", level); printf("%s\n", r.id.str);
   if(r.parent)
-  printf("%5s parent: %s\n", "", r.parent->id);
+    printf("%5s parent: %s\n", "", r.parent->id.str);
   if(r.prev)
-  printf("%5s sibling: %s\n", "", r.prev->id);
+    printf("%5s sibling: %s\n", "", r.prev->id.str);
   printf("%5s x: %f\n", "", r.rect.x);
   printf("%5s y: %f\n", "", r.rect.y);
   printf("%5s w: %f\n", "", r.rect.width);
@@ -43,10 +48,12 @@ UI_root TEST_ui() {
 
   UI_element* butt1 = UI_TextButton(root.a, STR("click me"));
   butt1->id = STR("button1");
+  butt1->click_args = (void*)butt1;
   butt1->onClick_left = dosomething;
 
   UI_element* butt2 = UI_TextButton(root.a, STR("do not"));
   butt2->id = STR("button2");
+  butt2->click_args = (void*)butt2;
   butt2->onClick_left = dosomething;
 
   UI_element* container3 = UI_InitElement(root.a);
@@ -91,6 +98,7 @@ void TEST_display(){
 
     while (!WindowShouldClose()) {
         BeginDrawing();
+	    ClearBackground(RAYWHITE);
 	    DISPLAY_RenderUI(*root.root);
         EndDrawing();
     }

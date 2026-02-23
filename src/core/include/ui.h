@@ -44,7 +44,7 @@ typedef enum {
   UI_ELEMENT_ICON,  
 } UI_Element_Type;
 
-typedef void (*UI_Action)();
+typedef void* (*UI_Action)(void*);
 
 typedef struct UI_element {
   UI_Element_Type type;
@@ -55,6 +55,9 @@ typedef struct UI_element {
   UI_Action onClick_right;
   UI_Action onClick_middle;
   UI_Action onHover;
+
+  void* click_args;
+  void* click_out;
 
   bool floating;
 
