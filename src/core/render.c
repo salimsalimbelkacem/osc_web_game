@@ -8,7 +8,7 @@ void DISPLAY_RenderElement(UI_element e){
     break;
   case UI_ELEMENT_BUTTON:
     if(GuiButton(e.rect, ELEMENT_STR(e))){
-      e.onClick_left();
+      e.click_out = e.onClick_left(e.click_args);
     }
     break;
   case UI_ELEMENT_TEXTBOX:

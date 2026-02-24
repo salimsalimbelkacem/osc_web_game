@@ -151,7 +151,7 @@ UI_element* UI_Textbox(arena* a, string text){
   text_box->content.type = UI_CONTENT_TEXT;  
   text_box->content.text.content = ARENA_strcpy(a, text);
 
-  return text_box;  
+  return text_box;
 }
 
 UI_element *UI_Heading(arena *a, string text, u8 level) {
